@@ -89,11 +89,13 @@ $$(".mode").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 $("#serviceForm").addEventListener("submit",e=>{
   e.preventDefault();
   const f=new FormData(e.target);
-  const work=[...$$('input[name="work"]:checked')].map(i=>i.value);
+  const work=[...$('input[name="work"]:checked')].map(i=>i.value);
+  const technicians=[...$('input[name="technician"]:checked')].map(i=>i.value);
   const service={
     id:nextId(),createdAt:new Date().toISOString(),status:"En proceso",
     mode,brand:f.get("brand"),model:f.get("model"),client:f.get("client")||"",
     serial:f.get("serial")||"",problem:f.get("problem"),work,workDetail:f.get("workDetail")||"",
+    technicians,
     condition:f.get("condition")||"",accessories:f.get("accessories")||"",observations:f.get("observations")||""
   };
   const data=getServices();data.push(service);saveServices(data);
