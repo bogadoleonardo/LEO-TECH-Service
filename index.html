@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sistema personal para registrar y gestionar mantenimientos de PC y notebooks.">
+  <title>LEO-TECH Service</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">LT</div>
+      <div><strong>LEO-TECH</strong><span>Service</span></div>
+    </div>
+    <nav>
+      <button class="nav-item active" data-view="dashboard">⌂ <span>Inicio</span></button>
+      <button class="nav-item" data-view="new-service">＋ <span>Nuevo servicio</span></button>
+      <button class="nav-item" data-view="history">▤ <span>Historial</span></button>
+      <button class="nav-item" data-view="clients">♙ <span>Clientes</span></button>
+      <button class="nav-item" data-view="equipment">▣ <span>Equipos</span></button>
+    </nav>
+    <div class="sidebar-footer">Versión inicial<br><small>Preparado para Google Sheets</small></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="mobile-menu" id="mobileMenu">☰</button>
+      <div>
+        <p class="eyebrow">GESTIÓN DE MANTENIMIENTO</p>
+        <h1 id="pageTitle">Inicio</h1>
+      </div>
+      <button class="primary-btn" id="headerNew">＋ Nuevo servicio</button>
+    </header>
+
+    <section id="dashboard" class="view active-view">
+      <div class="hero">
+        <div>
+          <p class="eyebrow">LEO-TECH SERVICE</p>
+          <h2>Registrá tus trabajos sin complicarte.</h2>
+          <p>Empezá rápido y agregá detalles solamente cuando los necesites.</p>
+          <button class="primary-btn" id="heroNew">＋ Registrar equipo</button>
+        </div>
+        <div class="hero-icon">💻</div>
+      </div>
+
+      <div class="stats">
+        <article><span>Servicios registrados</span><strong id="statServices">0</strong></article>
+        <article><span>En proceso</span><strong id="statProcess">0</strong></article>
+        <article><span>Finalizados</span><strong id="statDone">0</strong></article>
+      </div>
+
+      <div class="section-head"><div><h3>Últimos servicios</h3><p>Los registros más recientes aparecen aquí.</p></div></div>
+      <div id="recentServices" class="service-list empty-state">Todavía no hay servicios registrados.</div>
+    </section>
+
+    <section id="new-service" class="view">
+      <div class="section-head">
+        <div><h2>Nuevo servicio</h2><p>Elegí cuánto detalle querés registrar.</p></div>
+      </div>
+      <div class="mode-switch">
+        <button class="mode active" data-mode="quick"><strong>⚡ Rápido</strong><span>Para registrar varios equipos.</span></button>
+        <button class="mode" data-mode="normal"><strong>◉ Normal</strong><span>Cliente + equipo + trabajo.</span></button>
+        <button class="mode" data-mode="complete"><strong>▣ Completo</strong><span>Ficha detallada del equipo.</span></button>
+      </div>
+
+      <form id="serviceForm" class="card form-grid">
+        <div class="form-section">
+          <h3>Identificación</h3>
+          <div class="fields">
+            <label>Marca<input name="brand" required placeholder="Ej.: Lenovo"></label>
+            <label>Modelo<input name="model" required placeholder="Ej.: IdeaPad 3"></label>
+            <label class="normal-field">Cliente<input name="client" placeholder="Nombre del cliente"></label>
+            <label class="complete-field">N.º de serie<input name="serial" placeholder="Si está disponible"></label>
+          </div>
+        </div>
+        <div class="form-section">
+          <h3>Problema informado</h3>
+          <label><textarea name="problem" required rows="3" placeholder="¿Qué problema presenta el equipo?"></textarea></label>
+        </div>
+        <div class="form-section">
+          <h3>Trabajo a realizar</h3>
+          <div class="chips">
+            <label><input type="checkbox" name="work" value="Windows"> <span>Windows</span></label>
+            <label><input type="checkbox" name="work" value="Programas básicos"> <span>Programas básicos</span></label>
+            <label><input type="checkbox" name="work" value="RAM"> <span>RAM</span></label>
+            <label><input type="checkbox" name="work" value="SSD"> <span>SSD</span></label>
+            <label><input type="checkbox" name="work" value="Mantenimiento"> <span>Mantenimiento</span></label>
+            <label><input type="checkbox" name="work" value="Reparación"> <span>Reparación</span></label>
+          </div>
+          <label><textarea name="workDetail" rows="3" placeholder="Descripción del trabajo (opcional)"></textarea></label>
+        </div>
+        <div class="complete-field form-section">
+          <h3>Detalles adicionales</h3>
+          <div class="fields">
+            <label>Estado físico<textarea name="condition" rows="2" placeholder="Rayones, golpes, pantalla, carcasa..."></textarea></label>
+            <label>Accesorios recibidos<textarea name="accessories" rows="2" placeholder="Cargador, mouse, mochila..."></textarea></label>
+            <label>Observaciones<textarea name="observations" rows="2" placeholder="Información adicional"></textarea></label>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="secondary-btn" id="cancelForm">Cancelar</button>
+          <button type="submit" class="primary-btn">Guardar servicio</button>
+          <button type="submit" class="primary-btn outline" id="saveNext">Guardar y siguiente</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="history" class="view">
+      <div class="section-head"><div><h2>Historial</h2><p>Todos tus servicios registrados.</p></div></div>
+      <div id="historyList" class="service-list empty-state">Todavía no hay registros.</div>
+    </section>
+
+    <section id="clients" class="view placeholder-view">
+      <div class="placeholder-icon">♙</div><h2>Clientes</h2><p>Esta sección se conectará con los registros guardados.</p>
+    </section>
+
+    <section id="equipment" class="view placeholder-view">
+      <div class="placeholder-icon">▣</div><h2>Equipos</h2><p>Aquí podremos consultar la ficha e historial de cada computadora.</p>
+    </section>
+  </main>
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
