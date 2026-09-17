@@ -1,3 +1,39 @@
+const EQUIPMENT_CATALOG={
+  "Lenovo":["IdeaPad 1","IdeaPad 3","IdeaPad 5","IdeaPad Slim 3","ThinkPad E14","ThinkPad E15","ThinkPad T14","ThinkPad L14","ThinkBook 14","V14","V15","Otro / Escribir modelo"],
+  "HP":["15","14","Pavilion 15","Pavilion 14","250","255","ProBook 440","ProBook 450","EliteBook 840","EliteBook 850","Envy 15","Victus 15","Otro / Escribir modelo"],
+  "Dell":["Inspiron 15","Inspiron 14","Vostro 15","Latitude 3420","Latitude 3520","Latitude 5420","Latitude 5520","XPS 13","XPS 15","G15","Otro / Escribir modelo"],
+  "ASUS":["VivoBook 15","VivoBook 14","VivoBook Go 15","ZenBook 14","ROG Strix G15","TUF Gaming F15","TUF Gaming A15","ExpertBook","Otro / Escribir modelo"],
+  "Acer":["Aspire 3","Aspire 5","Aspire 7","Swift 3","Swift 5","Nitro 5","Extensa 15","TravelMate","Otro / Escribir modelo"],
+  "Samsung":["Galaxy Book","Galaxy Book2","Galaxy Book3","Book4","Notebook 9","Otro / Escribir modelo"],
+  "MSI":["Modern 14","Modern 15","GF63","Katana 15","Thin 15","Prestige 14","Prestige 15","Otro / Escribir modelo"],
+  "Toshiba":["Satellite C40","Satellite C50","Satellite L50","Tecra","Dynabook","Otro / Escribir modelo"],
+  "Apple":["MacBook Air","MacBook Pro","MacBook","Otro / Escribir modelo"],
+  "Huawei":["MateBook D14","MateBook D15","MateBook 14","MateBook 16","Otro / Escribir modelo"],
+  "Xiaomi":["RedmiBook 15","RedmiBook Pro","Mi Notebook","Otro / Escribir modelo"],
+  "Positivo":["Motion","Vision","Otro / Escribir modelo"],
+  "Exo":["Smart","Otro / Escribir modelo"],
+  "Otra":["Otro / Escribir modelo"]
+};
+
+function setupEquipmentCatalog(){
+  const brandInput=$("#brandInput"), modelInput=$("#modelInput");
+  const brandList=$("#brandList"), modelList=$("#modelList");
+  const brands=Object.keys(EQUIPMENT_CATALOG);
+  brandList.innerHTML=brands.map(b=>`<option value="${b}">`).join("");
+
+  function updateModels(){
+    const brand=brandInput.value.trim();
+    const models=EQUIPMENT_CATALOG[brand]||["Otro / Escribir modelo"];
+    modelList.innerHTML=models.map(m=>`<option value="${m}">`).join("");
+    modelInput.placeholder=models.length?"Elegí o escribí el modelo":"Escribí el modelo";
+  }
+
+  brandInput.addEventListener("input",updateModels);
+  brandInput.addEventListener("change",updateModels);
+  modelInput.addEventListener("focus",updateModels);
+  updateModels();
+}
+
 const STORAGE_KEY="leoTechServices";
 let mode="quick";
 
@@ -67,4 +103,4 @@ $("#serviceForm").addEventListener("submit",e=>{
   if(saveNext){setMode(mode);setTimeout(()=>e.target.elements.brand.focus(),100);}
   else showView("dashboard");
 });
-setMode("quick");renderDashboard();
+setMode("quick");setupEquipmentCatalog();renderDashboard();
