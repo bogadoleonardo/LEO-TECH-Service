@@ -68,8 +68,14 @@
         <div class="form-section">
           <h3>Identificación</h3>
           <div class="fields">
-            <label>Marca<input name="brand" required placeholder="Ej.: Lenovo"></label>
-            <label>Modelo<input name="model" required placeholder="Ej.: IdeaPad 3"></label>
+            <label>Marca
+              <input name="brand" id="brandInput" list="brandList" required autocomplete="off" placeholder="Escribí o elegí una marca">
+              <datalist id="brandList"></datalist>
+            </label>
+            <label>Modelo
+              <input name="model" id="modelInput" list="modelList" required autocomplete="off" placeholder="Elegí una marca primero">
+              <datalist id="modelList"></datalist>
+            </label>
             <label class="normal-field">Cliente<input name="client" placeholder="Nombre del cliente"></label>
             <label class="complete-field">N.º de serie<input name="serial" placeholder="Si está disponible"></label>
           </div>
