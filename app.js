@@ -69,39 +69,133 @@ function renderDashboard(){
   $("#recentServices").innerHTML=recent.length?recent.map(rowHTML).join(""):'Todavía no hay servicios registrados.';
 }
 function rowHTML(x){
-  return `<article class="service-row"><div class="service-id">#${x.id}</div><div><strong>${escapeHTML(x.brand)} ${escapeHTML(x.model)}</strong><p>${escapeHTML(x.problem)}</p><small>${formatDate(x.createdAt)}</small></div><span class="status">${x.status}</span></article>`;
+  return `<article class="service-row service-clickable" data-service-id="${escapeHTML(x.id)}">
+    <div class="service-id">#${escapeHTML(x.id)}</div>
+    <div><strong>${escapeHTML(x.brand)} ${escapeHTML(x.model)}</strong><p>${escapeHTML(x.problem)}</p><small>${formatDate(x.createdAt)}</small></div>
+    <span class="status">${escapeHTML(x.status)}</span>
+    <span class="row-hint">Ver ficha ›</span>
+  </article>`;
 }
 function renderHistory(){
   const data=getServices().reverse();
   $("#historyList").innerHTML=data.length?data.map(rowHTML).join(""):'Todavía no hay registros.';
 }
 function escapeHTML(s=""){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
-function nextId(){return "LT-"+String(getServices().length+1).padStart(4,"0");}
+function nextId(){
+  const nums=getServices().map(x=>Number(String(x.id||"").replace("LT-",""))).filter(Number.isFinite);
+  return "LT-"+String((nums.length?Math.max(...nums):0)+1).padStart(4,"0");
+}
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200);}
 
-$$(".nav-item").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view)));
+let selectedServiceId=null;
+let editingServiceId=null;
+
+function findService(id){return getServices().find(x=>x.id===id);}
+function openServiceModal(id){
+  const x=findService(id); if(!x)return;
+  selectedServiceId=id;
+  $("#modalTitle").textContent="Servicio "+x.id;
+  $("#modalBody").innerHTML=`
+    <div class="preview-grid">
+      <div><small>N.º DE SERVICIO</small><strong>${escapeHTML(x.id)}</strong></div>
+      <div><small>FECHA</small><strong>${formatDate(x.createdAt)}</strong></div>
+      <div><small>EQUIPO</small><strong>${escapeHTML(x.brand)} ${escapeHTML(x.model)}</strong></div>
+      <div><small>CLIENTE</small><strong>${escapeHTML(x.client||"No indicado")}</strong></div>
+      <div><small>N.º DE SERIE</small><strong>${escapeHTML(x.serial||"No indicado")}</strong></div>
+      <div><small>ESTADO</small><strong>${escapeHTML(x.status)}</strong></div>
+    </div>
+    <div class="preview-block"><small>PROBLEMA INFORMADO</small><p>${escapeHTML(x.problem||"—")}</p></div>
+    <div class="preview-block"><small>TRABAJO</small><p>${escapeHTML((x.work||[]).join(" · ")||"No indicado")}</p>${x.workDetail?`<p>${escapeHTML(x.workDetail)}</p>`:""}</div>
+    <div class="preview-block"><small>RESPONSABLES</small><p>${escapeHTML((x.technicians||[]).join(" · ")||"No indicados")}</p></div>
+    ${x.condition||x.accessories||x.observations?`<div class="preview-block"><small>DETALLES</small><p>${escapeHTML([x.condition,x.accessories,x.observations].filter(Boolean).join(" · "))}</p></div>`:""}
+  `;
+  $("#serviceModal").classList.remove("hidden");
+  $("#serviceModal").setAttribute("aria-hidden","false");
+}
+function closeServiceModal(){
+  $("#serviceModal").classList.add("hidden");
+  $("#serviceModal").setAttribute("aria-hidden","true");
+}
+function editService(id){
+  const x=findService(id); if(!x)return;
+  editingServiceId=id; closeServiceModal(); showView("new-service"); setMode(x.mode||"quick");
+  const f=$("#serviceForm");
+  f.elements.brand.value=x.brand||""; f.elements.model.value=x.model||"";
+  f.elements.client.value=x.client||""; f.elements.serial.value=x.serial||"";
+  f.elements.problem.value=x.problem||""; f.elements.workDetail.value=x.workDetail||"";
+  f.elements.condition.value=x.condition||""; f.elements.accessories.value=x.accessories||""; f.elements.observations.value=x.observations||"";
+  $('input[name="work"]').forEach(i=>i.checked=(x.work||[]).includes(i.value));
+  $('input[name="technician"]').forEach(i=>i.checked=(x.technicians||[]).includes(i.value));
+  toast("Editando "+x.id);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function deleteService(id){
+  const x=findService(id); if(!x)return;
+  if(!confirm(`¿Eliminar el servicio ${x.id} de ${x.brand} ${x.model}? Esta acción no se puede deshacer.`))return;
+  saveServices(getServices().filter(s=>s.id!==id));
+  closeServiceModal(); renderDashboard(); if($("#history").classList.contains("active-view"))renderHistory();
+  toast("Servicio "+id+" eliminado.");
+}
+
+$(".nav-item").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view)));
+document.addEventListener("click",e=>{
+  const row=e.target.closest(".service-clickable");
+  if(row) openServiceModal(row.dataset.serviceId);
+});
+$("#closeModal").addEventListener("click",closeServiceModal);
+$("#serviceModal").addEventListener("click",e=>{if(e.target.id==="serviceModal")closeServiceModal();});
+$("#modalEdit").addEventListener("click",()=>editService(selectedServiceId));
+$("#modalDelete").addEventListener("click",()=>deleteService(selectedServiceId));
+$("#modalPreview").addEventListener("click",()=>openReceiptPreview(selectedServiceId));
 $("#headerNew").addEventListener("click",openNew);
 $("#heroNew").addEventListener("click",openNew);
 $("#cancelForm").addEventListener("click",()=>showView("dashboard"));
 $("#mobileMenu").addEventListener("click",()=>$(".sidebar").classList.toggle("open"));
 $$(".mode").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 
+function openReceiptPreview(id){
+  const x=findService(id); if(!x)return;
+  $("#modalTitle").textContent="Previsualización · "+x.id;
+  $("#modalBody").innerHTML=`
+    <div class="receipt-preview">
+      <div class="receipt-brand"><strong>LEO-TECH</strong><span>SERVICE</span></div>
+      <div class="receipt-number">COMPROBANTE #${escapeHTML(x.id)}</div>
+      <hr>
+      <p><b>Equipo:</b> ${escapeHTML(x.brand)} ${escapeHTML(x.model)}</p>
+      <p><b>Cliente:</b> ${escapeHTML(x.client||"No indicado")}</p>
+      <p><b>Serie:</b> ${escapeHTML(x.serial||"No indicado")}</p>
+      <p><b>Problema:</b> ${escapeHTML(x.problem||"—")}</p>
+      <p><b>Trabajo:</b> ${escapeHTML((x.work||[]).join(", ")||"No indicado")}</p>
+      <p><b>Descripción:</b> ${escapeHTML(x.workDetail||"No indicada")}</p>
+      <p><b>Responsables:</b> ${escapeHTML((x.technicians||[]).join(", ")||"No indicados")}</p>
+      <p><b>Estado:</b> ${escapeHTML(x.status)}</p>
+      <p><b>Recibido:</b> ${formatDate(x.createdAt)}</p>
+      <p><b>Observaciones:</b> ${escapeHTML(x.observations||"No indicadas")}</p>
+    </div>`;
+  $("#modalEdit").classList.add("hidden"); $("#modalDelete").classList.add("hidden");
+  $("#modalPreview").textContent="Cerrar previsualización"; $("#modalPreview").onclick=()=>{closeServiceModal();location.reload();};
+  $("#serviceModal").classList.remove("hidden");
+}
 $("#serviceForm").addEventListener("submit",e=>{
   e.preventDefault();
   const f=new FormData(e.target);
   const work=[...$('input[name="work"]:checked')].map(i=>i.value);
   const technicians=[...$('input[name="technician"]:checked')].map(i=>i.value);
   const service={
-    id:nextId(),createdAt:new Date().toISOString(),status:"En proceso",
+    id:editingServiceId||nextId(),createdAt:editingServiceId?(findService(editingServiceId)?.createdAt||new Date().toISOString()):new Date().toISOString(),status:editingServiceId?(findService(editingServiceId)?.status||"En proceso"):"En proceso",
     mode,brand:f.get("brand"),model:f.get("model"),client:f.get("client")||"",
     serial:f.get("serial")||"",problem:f.get("problem"),work,workDetail:f.get("workDetail")||"",
     technicians,
     condition:f.get("condition")||"",accessories:f.get("accessories")||"",observations:f.get("observations")||""
   };
-  const data=getServices();data.push(service);saveServices(data);
+  const data=getServices();
+  if(editingServiceId){const idx=data.findIndex(x=>x.id===editingServiceId);if(idx>=0)data[idx]=service;}
+  else data.push(service);
+  saveServices(data);
   const saveNext=e.submitter?.id==="saveNext";
   e.target.reset();
-  toast("Servicio "+service.id+" guardado correctamente.");
+  toast("Servicio "+service.id+(editingServiceId?" actualizado correctamente.":" guardado correctamente."));
+  const wasEditing=!!editingServiceId; editingServiceId=null;
   if(saveNext){setMode(mode);setTimeout(()=>e.target.elements.brand.focus(),100);}
   else showView("dashboard");
 });
