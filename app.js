@@ -43,14 +43,16 @@ const getServices=()=>JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
 const saveServices=data=>localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
 
 function showView(id){
-  $$(".view").forEach(v=>v.classList.remove("active-view"));
+  const target=$("#"+id);
+  if(!target)return;
+  $(".view").forEach(v=>v.classList.remove("active-view"));
   $("#"+id).classList.add("active-view");
   $$(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.view===id));
   const titles={dashboard:"Inicio","new-service":"Nuevo servicio",history:"Historial",clients:"Clientes",equipment:"Equipos"};
   $("#pageTitle").textContent=titles[id]||"Inicio";
   if(id==="dashboard") renderDashboard();
   if(id==="history") renderHistory();
-  window.scrollTo({top:0,behavior:"smooth"});
+  window.scrollTo({top:0,behavior:"auto"});
 }
 function openNew(){showView("new-service");setMode("quick");$("#serviceForm").reset();}
 function setMode(value){
@@ -137,7 +139,14 @@ function deleteService(id){
   toast("Servicio "+id+" eliminado.");
 }
 
-$(".nav-item").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view)));
+document.addEventListener("click",e=>{
+  const navItem=e.target.closest(".nav-item");
+  if(navItem){
+    e.preventDefault();
+    showView(navItem.dataset.view);
+    if(window.innerWidth<=800)$(".sidebar").classList.remove("open");
+  }
+});
 document.addEventListener("click",e=>{
   const row=e.target.closest(".service-clickable");
   if(row) openServiceModal(row.dataset.serviceId);
