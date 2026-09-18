@@ -361,7 +361,7 @@ $("#serviceForm").addEventListener("submit",async e=>{
   renderPhotoPreview([]);
   const saveNext=e.submitter?.id==="saveNext";
   e.target.reset();
-  toast("Servicio "+service.id+(editingServiceId?" actualizado correctamente.":" guardado correctamente."));
+  toast("✓ "+(editingServiceId?"Servicio "+service.id+" actualizado correctamente.":"Servicio "+service.id+" guardado correctamente."));
   const wasEditing=!!editingServiceId; editingServiceId=null;
   if(saveNext){setMode(mode);setTimeout(()=>e.target.elements.brand.focus(),100);}
   else showView("dashboard");
