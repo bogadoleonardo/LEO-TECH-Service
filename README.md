@@ -25,3 +25,19 @@ Priorizar la velocidad de registro. El sistema tendrá tres niveles:
 5. Incorporar búsqueda, filtros y estadísticas.
 
 > Esta primera versión guarda los registros en el navegador para probar la interfaz. Todavía no usa datos reales ni Google Sheets.
+
+
+## Arquitectura del proyecto
+
+La aplicación está organizada por módulos para evitar que una modificación en una función rompa todo el sistema:
+
+- `js/main.js` — punto de entrada y eventos de la interfaz.
+- `js/core.js` — estado compartido, selectores, utilidades y mensajes.
+- `js/storage.js` — almacenamiento local/IndexedDB y fotos offline.
+- `js/equipment.js` — catálogo de marcas y modelos.
+- `js/dashboard.js` — Inicio e Historial.
+- `js/navigation.js` — navegación y modos Rápido/Normal/Completo.
+- `js/services.js` — creación y guardado de servicios.
+- `js/sync.js` — conexión y sincronización con Supabase.
+
+El archivo `app.js` monolítico anterior fue retirado. Las nuevas funciones deben agregarse al módulo correspondiente, evitando mezclar navegación, almacenamiento, Supabase y formularios en un único archivo.
