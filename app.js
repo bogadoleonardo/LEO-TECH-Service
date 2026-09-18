@@ -38,6 +38,7 @@ const STORAGE_KEY="leoTechServices";
 const DB_NAME="leoTechOfflineDB";
 const DB_VERSION=1;
 const DB_STORE="services";
+const PHOTO_STORE="photos";
 const SUPABASE_URL="https://zrzbhcipkzhkulphnyys.supabase.co";
 const SUPABASE_KEY="sb_publishable_sSu0VtLtlWCapaYiM1Koww_qqAbrDA8";
 let supabaseClient=null;
@@ -54,7 +55,8 @@ function openOfflineDB(){
   return new Promise((resolve,reject)=>{
     if(!("indexedDB" in window)){resolve(null);return;}
     const req=indexedDB.open(DB_NAME,DB_VERSION);
-    req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(DB_STORE))req.result.createObjectStore(DB_STORE,{keyPath:"id"});};
+    req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(DB_STORE))req.result.createObjectStore(DB_STORE,{keyPath:"id"});
+      if(!req.result.objectStoreNames.contains(PHOTO_STORE))req.result.createObjectStore(PHOTO_STORE,{keyPath:"id"});};
     req.onsuccess=()=>{offlineDB=req.result;resolve(offlineDB);};
     req.onerror=()=>resolve(null);
   });
@@ -76,6 +78,33 @@ function writeOfflineServices(data){
   store.clear();
   data.forEach(item=>store.put(item));
 }
+function saveLocalPhotos(serviceId,files){
+  return new Promise(resolve=>{
+    if(!offlineDB||!files.length){resolve();return;}
+    const tx=offlineDB.transaction(PHOTO_STORE,"readwrite");
+    const store=tx.objectStore(PHOTO_STORE);
+    files.forEach(file=>store.put({id:crypto.randomUUID(),serviceId,blob:file,photoType:"intake",pendingSync:true,createdAt:new Date().toISOString()}));
+    tx.oncomplete=()=>resolve();
+    tx.onerror=()=>resolve();
+  });
+}
+function readLocalPhotos(serviceId){
+  return new Promise(resolve=>{
+    if(!offlineDB){resolve([]);return;}
+    const req=offlineDB.transaction(PHOTO_STORE,"readonly").objectStore(PHOTO_STORE).getAll();
+    req.onsuccess=()=>resolve((req.result||[]).filter(p=>p.serviceId===serviceId));
+    req.onerror=()=>resolve([]);
+  });
+}
+function renderPhotoPreview(files){
+  const box=$("#photoPreview"); if(!box)return;
+  box.innerHTML="";
+  [...files].forEach(file=>{
+    const url=URL.createObjectURL(file);
+    const img=document.createElement("img"); img.src=url; img.alt="Foto del equipo"; box.appendChild(img);
+  });
+}
+
 async function initSupabase(){
   if(!window.supabase)return;
   supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -322,6 +351,8 @@ $("#serviceForm").addEventListener("submit",e=>{
   if(editingServiceId){const idx=data.findIndex(x=>x.id===editingServiceId);if(idx>=0){service.pendingSync=data[idx].pendingSync!==false;data[idx]=service;}}
   else data.push(service);
   saveServices(data);
+  await saveLocalPhotos(service.id,selectedPhotos);
+  renderPhotoPreview([]);
   const saveNext=e.submitter?.id==="saveNext";
   e.target.reset();
   toast("Servicio "+service.id+(editingServiceId?" actualizado correctamente.":" guardado correctamente."));
@@ -331,6 +362,7 @@ $("#serviceForm").addEventListener("submit",e=>{
 });
 initOfflineStore().then(async()=>{
   setMode("quick");setupEquipmentCatalog();renderDashboard();renderHistory();updateConnectionStatus();
+  $("#servicePhotos")?.addEventListener("change",e=>renderPhotoPreview(e.target.files));
   await initSupabase();
   await syncPendingServices();
 });
