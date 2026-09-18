@@ -49,7 +49,7 @@ let servicesCache=[];
 let offlineDB=null;
 
 const $=s=>document.querySelector(s);
-const $=s=>document.querySelectorAll(s);
+const $$=s=>document.querySelectorAll(s);
 
 function openOfflineDB(){
   return new Promise((resolve,reject)=>{
