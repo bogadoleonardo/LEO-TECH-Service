@@ -1,0 +1,19 @@
+{
+  "name": "LEO-TECH Service",
+  "short_name": "LEO-TECH",
+  "description": "Sistema para registrar y gestionar mantenimientos de PC y notebooks.",
+  "lang": "es-PY",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
