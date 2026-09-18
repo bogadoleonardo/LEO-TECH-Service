@@ -307,3 +307,5 @@ input:focus,textarea:focus{
 .connection-status.online{color:#16a34a}
 .connection-status.offline{color:#ea580c}
 @media(max-width:800px){.status-dot{width:7px;height:7px}.connection-status{font-size:10px}}
+
+.diagnostic-toggle{position:fixed;right:14px;bottom:14px;z-index:9999;border:0;border-radius:999px;padding:10px 14px;background:#111827;color:#fff;font-weight:700;cursor:pointer}.diagnostic-panel{position:fixed;right:14px;bottom:62px;width:min(430px,calc(100vw - 28px));z-index:10000;background:#fff;border:1px solid #dbe2ea;border-radius:14px;box-shadow:0 18px 45px rgba(15,23,42,.25);padding:14px;display:none}.diagnostic-panel.open{display:block}.diagnostic-head{display:flex;justify-content:space-between;align-items:center}.diagnostic-head button{border:0;background:transparent;font-size:24px}.diagnostic-log{white-space:pre-wrap;overflow:auto;max-height:45vh;background:#0f172a;color:#e2e8f0;border-radius:9px;padding:10px;font:11px/1.5 monospace}.diagnostic-panel p{font-size:12px;color:#64748b}@media(max-width:800px){.diagnostic-toggle{right:9px;bottom:9px;font-size:12px}.diagnostic-panel{right:9px;bottom:55px;width:calc(100vw - 18px)}}
