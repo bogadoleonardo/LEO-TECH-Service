@@ -56,3 +56,13 @@ body.locked{overflow:hidden}.auth-screen{position:fixed;inset:0;z-index:100;back
 @media(min-width:801px){
   .mode{min-height:86px}
 }
+
+@media(max-width:800px){
+  body{overflow-x:hidden}
+  .main{width:100%;min-width:0}
+  .sidebar{overflow-y:auto;overscroll-behavior:contain}
+  .mode-switch{width:100%}
+  .mode{box-sizing:border-box}
+  .form-section label{min-width:0}
+  .form-section input,.form-section textarea{max-width:100%}
+}
