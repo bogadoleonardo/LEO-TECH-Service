@@ -34,10 +34,6 @@ function setupEquipmentCatalog(){
   updateModels();
 }
 
-const SUPABASE_URL="https://zrzbhcipkzhkulphnyys.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY="sb_publishable_sSu0VtLtlWCapaYiM1Koww_qqAbrDA8";
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-
 const STORAGE_KEY="leoTechServices";
 let mode="quick";
 
