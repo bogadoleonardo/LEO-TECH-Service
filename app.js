@@ -38,6 +38,11 @@ const STORAGE_KEY="leoTechServices";
 const DB_NAME="leoTechOfflineDB";
 const DB_VERSION=1;
 const DB_STORE="services";
+const SUPABASE_URL="https://zrzbhcipkzhkulphnyys.supabase.co";
+const SUPABASE_KEY="sb_publishable_sSu0VtLtlWCapaYiM1Koww_qqAbrDA8";
+let supabaseClient=null;
+let syncBusy=false;
+
 let mode="quick";
 let servicesCache=[];
 let offlineDB=null;
@@ -71,6 +76,50 @@ function writeOfflineServices(data){
   store.clear();
   data.forEach(item=>store.put(item));
 }
+async function initSupabase(){
+  if(!window.supabase)return;
+  supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  if(session)return;
+  const {error}=await supabaseClient.auth.signInAnonymously();
+  if(error) console.warn("Supabase Auth:",error.message);
+}
+function serviceToRow(x){
+  return {
+    service_code:x.id,
+    mode:x.mode||"quick",
+    reported_problem:x.problem||"",
+    work_types:x.work||[],
+    work_description:x.workDetail||"",
+    observations:x.observations||"",
+    physical_condition:x.condition||"",
+    accessories_received:x.accessories||"",
+    technicians:x.technicians||[],
+    status:x.status||"En proceso",
+    received_at:x.createdAt||new Date().toISOString(),
+    receipt_type:x.mode==="complete"?"detailed":"quick"
+  };
+}
+async function syncPendingServices(){
+  if(syncBusy||!navigator.onLine||!supabaseClient)return;
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  if(!session)return;
+  const pending=servicesCache.filter(x=>x.pendingSync!==false);
+  if(!pending.length){updateConnectionStatus();return;}
+  syncBusy=true;
+  try{
+    for(const x of pending){
+      const {error}=await supabaseClient.from("services").upsert(serviceToRow(x),{onConflict:"service_code"});
+      if(error){console.warn("Sincronización:",error.message);break;}
+      const current=servicesCache.find(s=>s.id===x.id);
+      if(current)current.pendingSync=false;
+      writeOfflineServices(servicesCache);
+    }
+  }finally{
+    syncBusy=false;
+    updateConnectionStatus();
+  }
+}
 async function initOfflineStore(){
   await openOfflineDB();
   const local=readOfflineServices();
@@ -100,7 +149,7 @@ function updateConnectionStatus(){
     el.className="connection-status offline";
   }
 }
-window.addEventListener("online",updateConnectionStatus);
+window.addEventListener("online",()=>{updateConnectionStatus();syncPendingServices();});
 window.addEventListener("offline",updateConnectionStatus);
 
 function showView(id){
@@ -273,4 +322,8 @@ $("#serviceForm").addEventListener("submit",e=>{
   if(saveNext){setMode(mode);setTimeout(()=>e.target.elements.brand.focus(),100);}
   else showView("dashboard");
 });
-initOfflineStore().then(()=>{setMode("quick");setupEquipmentCatalog();renderDashboard();renderHistory();updateConnectionStatus();});
+initOfflineStore().then(async()=>{
+  setMode("quick");setupEquipmentCatalog();renderDashboard();renderHistory();updateConnectionStatus();
+  await initSupabase();
+  await syncPendingServices();
+});
