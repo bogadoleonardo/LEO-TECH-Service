@@ -107,14 +107,18 @@ function renderPhotoPreview(files){
 
 async function initSupabase(){
   if(!window.supabase)return;
-  supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
   const {data:{session}}=await supabaseClient.auth.getSession();
-  if(session)return;
-  const {error}=await supabaseClient.auth.signInAnonymously();
+  if(session){ updateConnectionStatus(); return; }
+  const {data,error}=await supabaseClient.auth.signInAnonymously();
   if(error){
     console.warn("Supabase Auth:",error.message);
     supabaseClient=null;
+    updateConnectionStatus();
+    return;
   }
+  updateConnectionStatus();
+  console.info("LEO-TECH: sesión anónima activa",data.user?.id||"");
 }
 function serviceToRow(x){
   return {
@@ -239,6 +243,7 @@ function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show"
 
 let selectedServiceId=null;
 let editingServiceId=null;
+let selectedPhotos=[];
 
 function findService(id){return getServices().find(x=>x.id===id);}
 function openServiceModal(id){
@@ -334,7 +339,7 @@ function openReceiptPreview(id){
   $("#modalPreview").textContent="Cerrar previsualización"; $("#modalPreview").onclick=()=>{closeServiceModal();location.reload();};
   $("#serviceModal").classList.remove("hidden");
 }
-$("#serviceForm").addEventListener("submit",e=>{
+$("#serviceForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const f=new FormData(e.target);
   const work=[...$('input[name="work"]:checked')].map(i=>i.value);
@@ -352,6 +357,7 @@ $("#serviceForm").addEventListener("submit",e=>{
   else data.push(service);
   saveServices(data);
   await saveLocalPhotos(service.id,selectedPhotos);
+  selectedPhotos=[];
   renderPhotoPreview([]);
   const saveNext=e.submitter?.id==="saveNext";
   e.target.reset();
@@ -362,7 +368,7 @@ $("#serviceForm").addEventListener("submit",e=>{
 });
 initOfflineStore().then(async()=>{
   setMode("quick");setupEquipmentCatalog();renderDashboard();renderHistory();updateConnectionStatus();
-  $("#servicePhotos")?.addEventListener("change",e=>renderPhotoPreview(e.target.files));
+  $("#servicePhotos")?.addEventListener("change",e=>{selectedPhotos=[...e.target.files];renderPhotoPreview(selectedPhotos);});
   await initSupabase();
   await syncPendingServices();
 });
