@@ -38,47 +38,6 @@ const SUPABASE_URL="https://zrzbhcipkzhkulphnyys.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_sSu0VtLtlWCapaYiM1Koww_qqAbrDA8";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 
-function setAuthMessage(msg,error=false){
-  const el=$("#authMessage"); if(!el)return;
-  el.textContent=msg; el.classList.toggle("error",error);
-}
-async function initAuth(){
-  const {data:{session}}=await supabaseClient.auth.getSession();
-  if(session) showApp(session.user);
-  else showLogin();
-  supabaseClient.auth.onAuthStateChange((_event,newSession)=>{
-    if(newSession) showApp(newSession.user); else showLogin();
-  });
-}
-function showLogin(){
-  $("#authScreen").classList.remove("hidden");
-  document.body.classList.add("locked");
-}
-function showApp(user){
-  $("#authScreen").classList.add("hidden");
-  document.body.classList.remove("locked");
-  const name=user.email||"Usuario";
-  const brand=$("#pageTitle"); if(brand) brand.dataset.user=name;
-}
-$("#authForm").addEventListener("submit",async e=>{
-  e.preventDefault();
-  setAuthMessage("Ingresando...");
-  const email=$("#authEmail").value.trim();
-  const password=$("#authPassword").value;
-  const {error}=await supabaseClient.auth.signInWithPassword({email,password});
-  if(error) setAuthMessage("No se pudo iniciar sesión: "+error.message,true);
-});
-$("#signupBtn").addEventListener("click",async()=>{
-  const email=$("#authEmail").value.trim();
-  const password=$("#authPassword").value;
-  if(!email||password.length<6){setAuthMessage("Ingresá un correo y una contraseña de al menos 6 caracteres.",true);return;}
-  setAuthMessage("Creando cuenta...");
-  const {data,error}=await supabaseClient.auth.signUp({email,password});
-  if(error) setAuthMessage("No se pudo crear la cuenta: "+error.message,true);
-  else if(data.session) setAuthMessage("Cuenta creada. Entrando...");
-  else setAuthMessage("Cuenta creada. Revisá tu correo para confirmar la cuenta.");
-}
-
 const STORAGE_KEY="leoTechServices";
 let mode="quick";
 
