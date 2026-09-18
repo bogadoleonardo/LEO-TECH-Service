@@ -14,11 +14,11 @@
       <div><strong>LEO-TECH</strong><span>Service</span></div>
     </div>
     <nav>
-      <button class="nav-item active" data-view="dashboard">⌂ <span>Inicio</span></button>
-      <button class="nav-item" data-view="new-service">＋ <span>Nuevo servicio</span></button>
-      <button class="nav-item" data-view="history">▤ <span>Historial</span></button>
-      <button class="nav-item" data-view="clients">♙ <span>Clientes</span></button>
-      <button class="nav-item" data-view="equipment">▣ <span>Equipos</span></button>
+      <button class="nav-item active" data-view="dashboard"><span class="nav-icon">⌂</span> <span>Inicio</span></button>
+      <button class="nav-item" data-view="new-service"><span class="nav-icon">＋</span> <span>Nuevo servicio</span></button>
+      <button class="nav-item" data-view="history"><span class="nav-icon">⚙</span> <span>Historial técnico</span></button>
+      <button class="nav-item" data-view="clients"><span class="nav-icon">◉</span> <span>Clientes</span></button>
+      <button class="nav-item" data-view="equipment"><span class="nav-icon">▣</span> <span>Equipos</span></button>
     </nav>
     <div class="sidebar-footer">Versión inicial<br><small>Preparado para Supabase</div>
   </aside>
@@ -27,27 +27,27 @@
     <header class="topbar">
       <button class="mobile-menu" id="mobileMenu">☰</button>
       <div>
-        <p class="eyebrow">GESTIÓN DE MANTENIMIENTO</p>
+        <p class="eyebrow">LEO-TECH SERVICE · CENTRO DE DIAGNÓSTICO</p>
         <h1 id="pageTitle">Inicio</h1>
       </div>
       <button class="primary-btn" id="headerNew">＋ Nuevo servicio</button>
     </header>
 
     <section id="dashboard" class="view active-view">
-      <div class="hero">
+      <div class="hero tech-hero">
         <div>
           <p class="eyebrow">LEO-TECH SERVICE</p>
           <h2>Registrá tus trabajos sin complicarte.</h2>
-          <p>Empezá rápido y agregá detalles solamente cuando los necesites.</p>
+          <p>Gestioná equipos, mantenimientos y servicios desde un solo lugar.</p><div class="hero-meta"><span>● SISTEMA OPERATIVO</span><span>SERVICE MANAGEMENT v1.0</span></div>
           <button class="primary-btn" id="heroNew">＋ Registrar equipo</button>
         </div>
-        <div class="hero-icon">💻</div>
+        <div class="hero-visual"><div class="circuit circuit-a"></div><div class="circuit circuit-b"></div><div class="tech-device">💻<span>DIAGNÓSTICO</span></div></div>
       </div>
 
       <div class="stats">
-        <article><span>Servicios registrados</span><strong id="statServices">0</strong></article>
-        <article><span>En proceso</span><strong id="statProcess">0</strong></article>
-        <article><span>Finalizados</span><strong id="statDone">0</strong></article>
+        <article class="stat-tech"><div class="stat-top"><span>▣</span><small>SERVICIOS</small></div><strong id="statServices">0</strong><p>equipos registrados</p></article>
+        <article class="stat-tech"><div class="stat-top"><span>⚙</span><small>EN PROCESO</small></div><strong id="statProcess">0</strong><p>mantenimientos activos</p></article>
+        <article class="stat-tech"><div class="stat-top"><span>✓</span><small>FINALIZADOS</small></div><strong id="statDone">0</strong><p>servicios completados</p></article>
       </div>
 
       <div class="section-head"><div><h3>Últimos servicios</h3><p>Los registros más recientes aparecen aquí.</p></div></div>
