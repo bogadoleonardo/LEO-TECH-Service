@@ -70,13 +70,15 @@ function readOfflineServices(){
   });
 }
 function writeOfflineServices(data){
-  servicesCache=data;
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}catch(e){}
+  servicesCache=[...data];
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(servicesCache));}catch(e){console.error("LEO-TECH localStorage:",e);}
   if(!offlineDB)return;
-  const tx=offlineDB.transaction(DB_STORE,"readwrite");
-  const store=tx.objectStore(DB_STORE);
-  store.clear();
-  data.forEach(item=>store.put(item));
+  try{
+    const tx=offlineDB.transaction(DB_STORE,"readwrite");
+    const store=tx.objectStore(DB_STORE);
+    store.clear();
+    servicesCache.forEach(item=>store.put(item));
+  }catch(e){console.error("LEO-TECH IndexedDB:",e);}
 }
 function saveLocalPhotos(serviceId,files){
   return new Promise(resolve=>{
@@ -351,13 +353,13 @@ $("#serviceForm").addEventListener("submit",async e=>{
     technicians,
     condition:f.get("condition")||"",accessories:f.get("accessories")||"",observations:f.get("observations")||""
   };
-  const data=getServices();
+  const data=[...getServices()];
   service.pendingSync=true;
   if(editingServiceId){const idx=data.findIndex(x=>x.id===editingServiceId);if(idx>=0){service.pendingSync=data[idx].pendingSync!==false;data[idx]=service;}}
   else data.push(service);
   try{
-    // Guardado local inmediato: no depende de Internet ni de Supabase.
-    saveServices([...data]);
+    // Guardado local inmediato: primero queda en el navegador, sin depender de Internet.
+    saveServices(data);
     renderDashboard();
     renderHistory();
     const wasEditing=!!editingServiceId;
