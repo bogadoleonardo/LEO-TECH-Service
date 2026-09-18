@@ -35,12 +35,73 @@ function setupEquipmentCatalog(){
 }
 
 const STORAGE_KEY="leoTechServices";
+const DB_NAME="leoTechOfflineDB";
+const DB_VERSION=1;
+const DB_STORE="services";
 let mode="quick";
+let servicesCache=[];
+let offlineDB=null;
 
 const $=s=>document.querySelector(s);
-const $$=s=>document.querySelectorAll(s);
-const getServices=()=>JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
-const saveServices=data=>localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+const $=s=>document.querySelectorAll(s);
+
+function openOfflineDB(){
+  return new Promise((resolve,reject)=>{
+    if(!("indexedDB" in window)){resolve(null);return;}
+    const req=indexedDB.open(DB_NAME,DB_VERSION);
+    req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(DB_STORE))req.result.createObjectStore(DB_STORE,{keyPath:"id"});};
+    req.onsuccess=()=>{offlineDB=req.result;resolve(offlineDB);};
+    req.onerror=()=>resolve(null);
+  });
+}
+function readOfflineServices(){
+  return new Promise(resolve=>{
+    if(!offlineDB){resolve(null);return;}
+    const req=offlineDB.transaction(DB_STORE,"readonly").objectStore(DB_STORE).getAll();
+    req.onsuccess=()=>resolve(req.result||[]);
+    req.onerror=()=>resolve(null);
+  });
+}
+function writeOfflineServices(data){
+  servicesCache=data;
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}catch(e){}
+  if(!offlineDB)return;
+  const tx=offlineDB.transaction(DB_STORE,"readwrite");
+  const store=tx.objectStore(DB_STORE);
+  store.clear();
+  data.forEach(item=>store.put(item));
+}
+async function initOfflineStore(){
+  await openOfflineDB();
+  const local=readOfflineServices();
+  if(local && local.length){
+    servicesCache=local;
+  }else{
+    try{
+      const legacy=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+      servicesCache=legacy.map(x=>({...x,pendingSync:x.pendingSync!==false}));
+      writeOfflineServices(servicesCache);
+    }catch(e){servicesCache=[];}
+  }
+  updateConnectionStatus();
+}
+const getServices=()=>servicesCache;
+const saveServices=data=>writeOfflineServices(data);
+
+function updateConnectionStatus(){
+  const el=$("#connectionStatus");
+  if(!el)return;
+  const pending=servicesCache.filter(x=>x.pendingSync!==false).length;
+  if(navigator.onLine){
+    el.textContent=pending?("🟢 Conectado · "+pending+" pendiente"+(pending===1?"":"s")):"🟢 Conectado";
+    el.className="connection-status online";
+  }else{
+    el.textContent=pending?("🟠 Sin conexión · "+pending+" pendiente"+(pending===1?"":"s")):"🟠 Sin conexión";
+    el.className="connection-status offline";
+  }
+}
+window.addEventListener("online",updateConnectionStatus);
+window.addEventListener("offline",updateConnectionStatus);
 
 function showView(id){
   const target=document.getElementById(id);
@@ -201,7 +262,8 @@ $("#serviceForm").addEventListener("submit",e=>{
     condition:f.get("condition")||"",accessories:f.get("accessories")||"",observations:f.get("observations")||""
   };
   const data=getServices();
-  if(editingServiceId){const idx=data.findIndex(x=>x.id===editingServiceId);if(idx>=0)data[idx]=service;}
+  service.pendingSync=true;
+  if(editingServiceId){const idx=data.findIndex(x=>x.id===editingServiceId);if(idx>=0){service.pendingSync=data[idx].pendingSync!==false;data[idx]=service;}}
   else data.push(service);
   saveServices(data);
   const saveNext=e.submitter?.id==="saveNext";
@@ -211,4 +273,4 @@ $("#serviceForm").addEventListener("submit",e=>{
   if(saveNext){setMode(mode);setTimeout(()=>e.target.elements.brand.focus(),100);}
   else showView("dashboard");
 });
-setMode("quick");setupEquipmentCatalog();renderDashboard();
+initOfflineStore().then(()=>{setMode("quick");setupEquipmentCatalog();renderDashboard();renderHistory();updateConnectionStatus();});
