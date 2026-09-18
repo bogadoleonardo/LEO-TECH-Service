@@ -179,13 +179,13 @@ function updateConnectionStatus(){
   const pending=servicesCache.filter(x=>x.pendingSync!==false).length;
   if(navigator.onLine){
     if(!supabaseClient){
-      el.textContent="🟢 Conectado · guardado local";
+      el.innerHTML='<span class="status-dot"></span> Conectado · guardado local';
     }else{
-      el.textContent=pending?("🟢 Conectado · "+pending+" pendiente"+(pending===1?"":"s")):"🟢 Conectado · sincronizado";
+      el.innerHTML='<span class="status-dot"></span> '+(pending?("Conectado · "+pending+" pendiente"+(pending===1?"":"s")):"Conectado · sincronizado");
     }
     el.className="connection-status online";
   }else{
-    el.textContent=pending?("🟠 Sin conexión · "+pending+" pendiente"+(pending===1?"":"s")):"🟠 Sin conexión";
+    el.innerHTML='<span class="status-dot"></span> '+(pending?("Sin conexión · "+pending+" pendiente"+(pending===1?"":"s")):"Sin conexión");
     el.className="connection-status offline";
   }
 }
