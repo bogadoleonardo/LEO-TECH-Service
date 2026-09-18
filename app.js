@@ -355,16 +355,32 @@ $("#serviceForm").addEventListener("submit",async e=>{
   service.pendingSync=true;
   if(editingServiceId){const idx=data.findIndex(x=>x.id===editingServiceId);if(idx>=0){service.pendingSync=data[idx].pendingSync!==false;data[idx]=service;}}
   else data.push(service);
-  saveServices(data);
-  await saveLocalPhotos(service.id,selectedPhotos);
-  selectedPhotos=[];
-  renderPhotoPreview([]);
-  const saveNext=e.submitter?.id==="saveNext";
-  e.target.reset();
-  toast("✓ "+(editingServiceId?"Servicio "+service.id+" actualizado correctamente.":"Servicio "+service.id+" guardado correctamente."));
-  const wasEditing=!!editingServiceId; editingServiceId=null;
-  if(saveNext){setMode(mode);setTimeout(()=>e.target.elements.brand.focus(),100);}
-  else showView("dashboard");
+  try{
+    // Guardado local inmediato: no depende de Internet ni de Supabase.
+    saveServices([...data]);
+    renderDashboard();
+    renderHistory();
+    const wasEditing=!!editingServiceId;
+    const saveNext=e.submitter?.id==="saveNext";
+    const savedPhotos=[...selectedPhotos];
+    selectedPhotos=[];
+    renderPhotoPreview([]);
+    e.target.reset();
+    editingServiceId=null;
+    toast("✓ "+(wasEditing?"Servicio "+service.id+" actualizado.":"Servicio "+service.id+" guardado."));
+    if(savedPhotos.length) await saveLocalPhotos(service.id,savedPhotos);
+    if(saveNext){
+      setMode(mode);
+      setTimeout(()=>e.target.elements.brand.focus(),100);
+    }else{
+      showView("dashboard");
+    }
+    updateConnectionStatus();
+    syncPendingServices();
+  }catch(error){
+    console.error("LEO-TECH: error al guardar",error);
+    toast("⚠ No se pudo guardar. El registro no se perdió.");
+  }
 });
 initOfflineStore().then(async()=>{
   setMode("quick");setupEquipmentCatalog();renderDashboard();renderHistory();updateConnectionStatus();
