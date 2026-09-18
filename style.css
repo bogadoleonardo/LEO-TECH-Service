@@ -71,3 +71,8 @@ body.locked{overflow:hidden}.auth-screen{position:fixed;inset:0;z-index:100;back
 .connection-status.online{color:#16834d}
 .connection-status.offline{color:#b45309}
 @media(max-width:800px){.connection-status{font-size:10px}}
+
+.photo-picker{display:inline-flex;align-items:center;gap:8px;padding:11px 14px;border:1px dashed #94a3b8;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px}
+.photo-picker input{display:none}
+.photo-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.photo-preview img{width:82px;height:82px;object-fit:cover;border-radius:10px;border:1px solid #dbe2ea}
