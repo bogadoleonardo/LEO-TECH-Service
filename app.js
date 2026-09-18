@@ -56,6 +56,7 @@ $("#serviceForm").addEventListener("submit",e=>{
   renderDashboard();
   renderHistory();
   updateConnectionStatus();
+  const photosToSave=[...selectedPhotos];
   form.reset();
   selectedPhotos=[];
   renderPhotoPreview([]);
@@ -65,7 +66,6 @@ $("#serviceForm").addEventListener("submit",e=>{
   toast("✓ Servicio "+service.id+(wasEditing?" actualizado.":" guardado."));
 
   // Fotos y nube quedan fuera del camino crítico del guardado.
-  const photosToSave=[...selectedPhotos];
   if(photosToSave.length){
     setTimeout(()=>saveLocalPhotos(service.id,photosToSave),0);
   }
