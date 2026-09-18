@@ -133,6 +133,20 @@
       <div class="placeholder-icon">▣</div><h2>Equipos</h2><p>Aquí podremos consultar la ficha e historial de cada computadora.</p>
     </section>
   </main>
+  <div id="serviceModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><p class="eyebrow">FICHA DEL SERVICIO</p><h2 id="modalTitle">Servicio</h2></div>
+        <button type="button" class="modal-close" id="closeModal">×</button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+      <div class="modal-actions">
+        <button type="button" class="secondary-btn" id="modalEdit">✎ Editar</button>
+        <button type="button" class="danger-btn" id="modalDelete">🗑 Eliminar</button>
+        <button type="button" class="primary-btn" id="modalPreview">▣ Previsualizar comprobante</button>
+      </div>
+    </div>
+  </div>
   <div id="toast" class="toast"></div>
   <script src="app.js?v=3"></script>
 </body>
