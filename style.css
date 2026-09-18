@@ -66,3 +66,8 @@ body.locked{overflow:hidden}.auth-screen{position:fixed;inset:0;z-index:100;back
   .form-section label{min-width:0}
   .form-section input,.form-section textarea{max-width:100%}
 }
+
+.connection-status{font-size:11px;font-weight:700;margin-top:5px}
+.connection-status.online{color:#16834d}
+.connection-status.offline{color:#b45309}
+@media(max-width:800px){.connection-status{font-size:10px}}
