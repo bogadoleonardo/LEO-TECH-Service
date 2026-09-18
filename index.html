@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Sistema personal para registrar y gestionar mantenimientos de PC y notebooks.">
+  <meta name="theme-color" content="#111827">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
   <title>LEO-TECH Service</title>
   <link rel="stylesheet" href="style.css?v=5">
 </head>
@@ -149,5 +153,10 @@
   </div>
   <div id="toast" class="toast"></div>
   <script src="app.js?v=5"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
+    }
+  </script>
 </body>
 </html>
