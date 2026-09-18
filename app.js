@@ -82,7 +82,10 @@ async function initSupabase(){
   const {data:{session}}=await supabaseClient.auth.getSession();
   if(session)return;
   const {error}=await supabaseClient.auth.signInAnonymously();
-  if(error) console.warn("Supabase Auth:",error.message);
+  if(error){
+    console.warn("Supabase Auth:",error.message);
+    supabaseClient=null;
+  }
 }
 function serviceToRow(x){
   return {
@@ -142,7 +145,11 @@ function updateConnectionStatus(){
   if(!el)return;
   const pending=servicesCache.filter(x=>x.pendingSync!==false).length;
   if(navigator.onLine){
-    el.textContent=pending?("🟢 Conectado · "+pending+" pendiente"+(pending===1?"":"s")):"🟢 Conectado";
+    if(!supabaseClient){
+      el.textContent="🟢 Conectado · guardado local";
+    }else{
+      el.textContent=pending?("🟢 Conectado · "+pending+" pendiente"+(pending===1?"":"s")):"🟢 Conectado · sincronizado";
+    }
     el.className="connection-status online";
   }else{
     el.textContent=pending?("🟠 Sin conexión · "+pending+" pendiente"+(pending===1?"":"s")):"🟠 Sin conexión";
