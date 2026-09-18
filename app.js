@@ -1,3 +1,84 @@
+$("#serviceForm").addEventListener("submit",e=>{
+  e.preventDefault();
+
+  const form=e.target;
+  const f=new FormData(form);
+  const work=[...$('input[name="work"]:checked')].map(i=>i.value);
+  const technicians=[...$('input[name="technician"]:checked')].map(i=>i.value);
+  const wasEditing=!!editingServiceId;
+  const saveNext=e.submitter?.id==="saveNext";
+  const existing=editingServiceId?findService(editingServiceId):null;
+
+  const service={
+    id:editingServiceId||nextId(),
+    createdAt:existing?.createdAt||new Date().toISOString(),
+    status:existing?.status||"En proceso",
+    mode,
+    brand:String(f.get("brand")||"").trim(),
+    model:String(f.get("model")||"").trim(),
+    client:String(f.get("client")||"").trim(),
+    serial:String(f.get("serial")||"").trim(),
+    problem:String(f.get("problem")||"").trim(),
+    work,
+    workDetail:String(f.get("workDetail")||"").trim(),
+    technicians,
+    condition:String(f.get("condition")||"").trim(),
+    accessories:String(f.get("accessories")||"").trim(),
+    observations:String(f.get("observations")||"").trim(),
+    pendingSync:true
+  };
+
+  // Validación explícita para que el botón nunca falle silenciosamente.
+  if(!service.brand||!service.model||!service.problem){
+    toast("⚠ Completá marca, modelo y problema.");
+    return;
+  }
+
+  const data=[...getServices()];
+  const position=data.findIndex(x=>x.id===service.id);
+  if(position>=0)data[position]=service;
+  else data.push(service);
+
+  // PRIMERO: persistencia local inmediata.
+  try{
+    const serialized=JSON.stringify(data);
+    localStorage.setItem(STORAGE_KEY,serialized);
+    const verified=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+    if(!Array.isArray(verified))throw new Error("No se pudo verificar el almacenamiento local.");
+    servicesCache=data;
+  }catch(error){
+    console.error("LEO-TECH: almacenamiento local",error);
+    toast("⚠ No se pudo guardar en este navegador.");
+    return;
+  }
+
+  // Actualizar la interfaz antes de cualquier tarea secundaria.
+  renderDashboard();
+  renderHistory();
+  updateConnectionStatus();
+  form.reset();
+  selectedPhotos=[];
+  renderPhotoPreview([]);
+  editingServiceId=null;
+
+  // Confirmación inmediata y visible.
+  toast("✓ Servicio "+service.id+(wasEditing?" actualizado.":" guardado."));
+
+  // Fotos y nube quedan fuera del camino crítico del guardado.
+  const photosToSave=[...selectedPhotos];
+  if(photosToSave.length){
+    setTimeout(()=>saveLocalPhotos(service.id,photosToSave),0);
+  }
+  setTimeout(()=>syncPendingServices(),0);
+
+  if(saveNext){
+    setMode(mode);
+    setTimeout(()=>form.elements.brand.focus(),120);
+  }else{
+    setTimeout(()=>showView("dashboard"),120);
+  }
+});
+
 const EQUIPMENT_CATALOG={
   "Lenovo":["IdeaPad 1","IdeaPad 3","IdeaPad 5","IdeaPad Slim 3","ThinkPad E14","ThinkPad E15","ThinkPad T14","ThinkPad L14","ThinkBook 14","V14","V15","Otro / Escribir modelo"],
   "HP":["15","14","Pavilion 15","Pavilion 14","250","255","ProBook 440","ProBook 450","EliteBook 840","EliteBook 850","Envy 15","Victus 15","Otro / Escribir modelo"],
