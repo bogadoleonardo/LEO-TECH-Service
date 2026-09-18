@@ -132,7 +132,7 @@
         </div>
         <div class="form-actions">
           <button type="button" class="secondary-btn" id="cancelForm">Cancelar</button>
-          <button type="submit" class="primary-btn">Guardar servicio</button>
+          <button type="submit" class="primary-btn" id="saveServiceBtn">Guardar servicio</button>
           <button type="submit" class="primary-btn outline" id="saveNext">Guardar y siguiente</button>
         </div>
       </form>
@@ -167,7 +167,7 @@
   </div>
   <div id="toast" class="toast"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=13"></script>
+  <script src="app.js?v=14"></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
