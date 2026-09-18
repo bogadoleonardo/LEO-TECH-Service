@@ -110,6 +110,14 @@
             <label><input type="checkbox" name="technician" value="Leonardo Vázquez" checked> <span>Leonardo Vázquez</span></label>
           </div>
         </div>
+        <div class="form-section">
+          <h3>Fotos del equipo</h3>
+          <p class="form-hint">Opcional. Podés sacar fotos aunque estés sin internet; quedarán pendientes para sincronizar.</p>
+          <label class="photo-picker">📷 Agregar fotos
+            <input id="servicePhotos" type="file" accept="image/*" capture="environment" multiple>
+          </label>
+          <div id="photoPreview" class="photo-preview"></div>
+        </div>
         <div class="complete-field form-section">
           <h3>Detalles adicionales</h3>
           <div class="fields">
