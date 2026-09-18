@@ -13,3 +13,46 @@ body.locked{overflow:hidden}.auth-screen{position:fixed;inset:0;z-index:100;back
 
 /* Navegación robusta */
 .nav{position:relative;z-index:20}.nav-item{position:relative;z-index:21;pointer-events:auto}.sidebar{z-index:30}
+
+
+/* Ajustes de experiencia móvil */
+@media(max-width:800px){
+  .sidebar{width:270px}
+  .sidebar nav{margin-top:4px}
+  .nav-item{padding:14px 14px;min-height:48px}
+  .main{padding:18px 14px 45px}
+  .topbar{align-items:center;margin-bottom:20px}
+  .topbar h1{font-size:22px}
+  .eyebrow{font-size:9px}
+  .hero{padding:20px;border-radius:18px;min-height:auto}
+  .hero h2{font-size:23px;line-height:1.2}
+  .hero-visual{display:none}
+  .stats{gap:10px;margin:16px 0}
+  .stats article{padding:16px}
+  .stats strong{font-size:26px}
+  .section-head{margin:22px 0 12px}
+  .mode-switch{grid-template-columns:1fr;gap:10px;margin-bottom:14px}
+  .mode{
+    width:100%;
+    min-height:70px;
+    padding:14px 15px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:3px;
+  }
+  .mode strong{font-size:15px}
+  .mode span{font-size:12px;line-height:1.35;margin-top:0}
+  .card{padding:17px;border-radius:16px}
+  .form-section{padding-bottom:18px;margin-bottom:18px}
+  .form-section h3{font-size:16px;margin-bottom:11px}
+  .fields{grid-template-columns:1fr;gap:12px}
+  .chips{gap:7px}
+  .chips span{padding:8px 10px;font-size:12px}
+  .form-actions{display:grid;grid-template-columns:1fr;gap:9px}
+  .form-actions button{width:100%;flex:none}
+  .service-row{padding:14px}
+}
+@media(min-width:801px){
+  .mode{min-height:86px}
+}
