@@ -28,9 +28,15 @@ $("#serviceForm").addEventListener("submit",e=>{
     pendingSync:true
   };
 
-  // Validación explícita para que el botón nunca falle silenciosamente.
+  // Validación propia: no dependemos de la validación nativa del navegador.
   if(!service.brand||!service.model||!service.problem){
-    toast("⚠ Completá marca, modelo y problema.");
+    const faltan=[];
+    if(!service.brand)faltan.push("marca");
+    if(!service.model)faltan.push("modelo");
+    if(!service.problem)faltan.push("problema");
+    toast("⚠ Falta completar: "+faltan.join(", ")+".");
+    const first=!service.brand?$("#brandInput"):!service.model?$("#modelInput"):$('textarea[name="problem"]');
+    first?.focus();
     return;
   }
 
