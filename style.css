@@ -300,3 +300,10 @@ input:focus,textarea:focus{
     box-shadow:5px 7px 15px rgba(35,65,100,.06),-4px -4px 9px rgba(255,255,255,.8);
   }
 }
+
+/* Indicador de conexión */
+.connection-status{display:inline-flex;align-items:center;gap:6px;min-height:16px}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:currentColor;box-shadow:0 0 0 3px color-mix(in srgb,currentColor 14%,transparent),0 0 8px currentColor}
+.connection-status.online{color:#16a34a}
+.connection-status.offline{color:#ea580c}
+@media(max-width:800px){.status-dot{width:7px;height:7px}.connection-status{font-size:10px}}
