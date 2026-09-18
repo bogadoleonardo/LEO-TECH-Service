@@ -14,11 +14,11 @@
       <div><strong>LEO-TECH</strong><span>Service</span></div>
     </div>
     <nav class="nav">
-      <button type="button" class="nav-item active" data-view="dashboard"><span class="nav-icon">⌂</span> <span>Inicio</span></button>
-      <button type="button" class="nav-item" data-view="new-service"><span class="nav-icon">＋</span> <span>Nuevo servicio</span></button>
-      <button type="button" class="nav-item" data-view="history"><span class="nav-icon">⚙</span> <span>Historial técnico</span></button>
-      <button type="button" class="nav-item" data-view="clients"><span class="nav-icon">◉</span> <span>Clientes</span></button>
-      <button type="button" class="nav-item" data-view="equipment"><span class="nav-icon">▣</span> <span>Equipos</span></button>
+      <button type="button" class="nav-item active" data-view="dashboard" onclick="showView('dashboard')"><span class="nav-icon">⌂</span> <span>Inicio</span></button>
+      <button type="button" class="nav-item" data-view="new-service" onclick="showView('new-service')"><span class="nav-icon">＋</span> <span>Nuevo servicio</span></button>
+      <button type="button" class="nav-item" data-view="history" onclick="showView('history')"><span class="nav-icon">⚙</span> <span>Historial técnico</span></button>
+      <button type="button" class="nav-item" data-view="clients" onclick="showView('clients')"><span class="nav-icon">◉</span> <span>Clientes</span></button>
+      <button type="button" class="nav-item" data-view="equipment" onclick="showView('equipment')"><span class="nav-icon">▣</span> <span>Equipos</span></button>
     </nav>
     <div class="sidebar-footer">Versión inicial<br><small>Preparado para Supabase</small></div>
   </aside>
