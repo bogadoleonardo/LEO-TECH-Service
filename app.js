@@ -43,10 +43,19 @@ const getServices=()=>JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
 const saveServices=data=>localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
 
 function showView(id){
-  const target=$("#"+id);
-  if(!target)return;
-  $(".view").forEach(v=>v.classList.remove("active-view"));
-
+  const target=document.getElementById(id);
+  if(!target)return false;
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active-view"));
+  target.classList.add("active-view");
+  document.querySelectorAll(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.view===id));
+  const titles={dashboard:"Inicio","new-service":"Nuevo servicio",history:"Historial técnico",clients:"Clientes",equipment:"Equipos"};
+  const title=document.getElementById("pageTitle");
+  if(title)title.textContent=titles[id]||"Inicio";
+  if(id==="dashboard")renderDashboard();
+  if(id==="history")renderHistory();
+  window.scrollTo(0,0);
+  return false;
+}
 function openNew(){showView("new-service");setMode("quick");$("#serviceForm").reset();}
 function setMode(value){
   mode=value;
