@@ -4,7 +4,7 @@
 <main>
 <section class="card"><div class="top"><h2>Datos generales</h2><b id="status">● Sin configurar</b></div>
 <div class="grid"><label>Cliente<input id="client" autocomplete="off"></label><label>Responsable<select id="technician"><option>Leonardo Vázquez</option><option>Adrián Soto</option><option>Leonardo Vázquez y Adrián Soto</option></select></label></div></section>
-<section class="card"><div class="top"><h2>Equipos <span id="count">1</span></h2><button type="button" id="addBtn">＋ Agregar equipo</button></div>
+<section class="card"><div class="top"><h2>Equipos <span id="count">1</span></h2><div class="toolbar"><button type="button" id="addBtn">＋ Agregar equipo</button><label class="excelBtn">📊 Cargar Excel<input type="file" id="excelInput" accept=".xlsx,.xls,.csv" hidden></label><button type="button" id="templateBtn">⬇ Plantilla Excel</button></div></div>
 <div id="equipmentList"></div>
 <div class="actions"><button type="button" class="primary" id="saveBtn">✓ Guardar todos en Google Sheets</button><button type="button" id="pdfBtn">▣ PDF de todos los equipos</button><button type="button" id="clearBtn">Limpiar todo</button></div><div id="msg"></div></section>
 <section class="receipt" id="receipt"><div class="receiptHead"><strong>LEO-TECH SERVICE</strong><span id="rCode"></span></div><h2>Comprobantes de servicio</h2><div id="receiptBody"></div></section>
