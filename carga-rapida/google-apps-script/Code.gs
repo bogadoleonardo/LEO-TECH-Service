@@ -1,0 +1,4 @@
+const SHEET_NAME="Servicios";
+function doGet(){return json_({ok:true,service:"LEO-TECH Carga Rápida"});}
+function doPost(e){try{const d=JSON.parse(e.postData.contents||"{}");const ss=SpreadsheetApp.getActiveSpreadsheet();let sh=ss.getSheetByName(SHEET_NAME);if(!sh)sh=ss.insertSheet(SHEET_NAME);const h=["Fecha","N.º servicio","Cliente","Marca","Modelo","N.º serie","Problema","Trabajo","Responsable","Estado","Observaciones"];if(sh.getLastRow()===0)sh.appendRow(h);sh.appendRow([new Date(d.createdAt||new Date()),d.code||"",d.client||"",d.brand||"",d.model||"",d.serial||"",d.problem||"",d.work||"",d.technician||"",d.status||"",d.observations||""]);return json_({ok:true,code:d.code||""})}catch(err){return json_({ok:false,error:String(err)})}}
+function json_(o){return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);}
