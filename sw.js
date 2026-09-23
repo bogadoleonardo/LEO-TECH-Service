@@ -1,5 +1,5 @@
-const CACHE_NAME='leo-tech-shell-modular-v6';
-const ASSETS=['./','./index.html','./style.css?v=8','./manifest.json','./js/core.js','./js/storage.js','./js/equipment.js','./js/dashboard.js','./js/navigation.js','./js/services.js','./js/sync.js','./js/main.js?v=6','./js/diagnostics.js']
+const CACHE_NAME='leo-tech-shell-modular-v7';
+const ASSETS=['./','./index.html','./style.css?v=8','./manifest.json','./js/core.js','./js/storage.js','./js/equipment.js','./js/dashboard.js','./js/navigation.js','./js/services.js','./js/sync.js','./js/main.js?v=7','./js/diagnostics.js']
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',event=>{
