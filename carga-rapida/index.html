@@ -1,28 +1,11 @@
 <!doctype html>
-<html lang="es">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LEO-TECH Carga Rápida</title><link rel="stylesheet" href="./style.css"></head>
-<body>
-<header><div><span>LEO-TECH</span><h1>Carga Rápida</h1><p>Registro directo a Google Sheets</p></div><button id="configBtn">⚙ Google Sheets</button></header>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LEO-TECH Carga Rápida</title><link rel="stylesheet" href="./style.css"></head>
+<body><header><div><span>LEO-TECH</span><h1>Carga Rápida</h1><p>Cargá uno o varios equipos y enviálos a Google Sheets</p></div><button id="configBtn">⚙ Google Sheets</button></header>
 <main>
-<section class="card">
-<div class="top"><h2>Nuevo registro</h2><b id="status">● Sin configurar</b></div>
-<form id="form">
-<div class="grid">
-<label>Cliente<input name="client" autocomplete="off"></label>
-<label>Marca<input name="brand" list="brands" autocomplete="off" required><datalist id="brands"><option>Lenovo</option><option>HP</option><option>ASUS</option><option>Acer</option><option>Dell</option><option>Samsung</option><option>Apple</option><option>Positivo</option><option>Exo</option><option>GIGABYTE</option></datalist></label>
-<label>Modelo<input name="model" autocomplete="off" required></label>
-<label>N.º de serie<input name="serial" autocomplete="off"></label>
-<label class="full">Problema informado<textarea name="problem" rows="2" required></textarea></label>
-<label class="full">Trabajo realizado<input name="work" list="works" autocomplete="off" required><datalist id="works"><option>Instalación de Windows</option><option>Instalación de programas</option><option>Mantenimiento general</option><option>Cambio/Ampliación de RAM</option><option>Cambio de SSD</option><option>Reparación</option><option>Diagnóstico</option></datalist></label>
-<label>Responsable<select name="technician"><option>Leonardo Vázquez</option><option>Adrián Soto</option><option>Leonardo Vázquez y Adrián Soto</option></select></label>
-<label>Estado<select name="status"><option>En proceso</option><option>Terminado</option><option>Entregado</option></select></label>
-<label class="full">Observaciones<textarea name="observations" rows="2"></textarea></label>
-</div>
-<div class="actions"><button type="submit" class="primary">✓ Guardar en Google Sheets</button><button type="button" id="pdfBtn">▣ Generar PDF</button><button type="button" id="clearBtn">Limpiar</button></div>
-<div id="msg"></div>
-</form>
-</section>
-<section class="receipt" id="receipt"><div class="receiptHead"><strong>LEO-TECH SERVICE</strong><span id="rCode">LT-PREVIEW</span></div><h2>Comprobante de servicio</h2><div id="receiptBody"></div></section>
-</main>
-<script src="./app.js"></script>
-</body></html>
+<section class="card"><div class="top"><h2>Datos generales</h2><b id="status">● Sin configurar</b></div>
+<div class="grid"><label>Cliente<input id="client" autocomplete="off"></label><label>Responsable<select id="technician"><option>Leonardo Vázquez</option><option>Adrián Soto</option><option>Leonardo Vázquez y Adrián Soto</option></select></label></div></section>
+<section class="card"><div class="top"><h2>Equipos <span id="count">1</span></h2><button type="button" id="addBtn">＋ Agregar equipo</button></div>
+<div id="equipmentList"></div>
+<div class="actions"><button type="button" class="primary" id="saveBtn">✓ Guardar todos en Google Sheets</button><button type="button" id="pdfBtn">▣ PDF de todos los equipos</button><button type="button" id="clearBtn">Limpiar todo</button></div><div id="msg"></div></section>
+<section class="receipt" id="receipt"><div class="receiptHead"><strong>LEO-TECH SERVICE</strong><span id="rCode"></span></div><h2>Comprobantes de servicio</h2><div id="receiptBody"></div></section>
+</main><script src="./app.js"></script></body></html>
