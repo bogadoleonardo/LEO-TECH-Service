@@ -1,0 +1,11 @@
+const KEY="leoTechSheetsUrl";const $=s=>document.querySelector(s);let lastCode="LT-PREVIEW";
+function url(){return(localStorage.getItem(KEY)||"").trim()}
+function configure(){const v=prompt("Pegá la URL /exec de tu Google Apps Script:",url());if(v!==null){localStorage.setItem(KEY,v.trim());updateStatus()}}
+function updateStatus(){const ok=!!url();$("#status").textContent=ok?"● Google Sheets configurado":"● Sin configurar";$("#status").className=ok?"ok":""}
+function code(){return"LT-"+Date.now().toString().slice(-8)}
+function data(){const f=new FormData($("#form"));return{code:lastCode,createdAt:new Date().toISOString(),client:f.get("client"),brand:f.get("brand"),model:f.get("model"),serial:f.get("serial"),problem:f.get("problem"),work:f.get("work"),technician:f.get("technician"),status:f.get("status"),observations:f.get("observations")}}
+function render(d){$("#rCode").textContent=d.code;$("#receiptBody").innerHTML=Object.entries({Cliente:d.client||"—",Marca:d.brand,Modelo:d.model,"N.º de serie":d.serial||"—","Problema informado":d.problem,"Trabajo realizado":d.work,Responsable:d.technician,Estado:d.status,Observaciones:d.observations||"—",Fecha:new Date(d.createdAt).toLocaleString("es-PY")}).map(([k,v])=>'<div class="receiptRow"><strong>'+k+'</strong><span>'+String(v).replaceAll("&","&amp;").replaceAll("<","&lt;")+'</span></div>').join("")}
+$("#configBtn").onclick=configure;$("#clearBtn").onclick=()=>{$("#form").reset();$("#msg").textContent="";lastCode="LT-PREVIEW";render(data())};
+$("#pdfBtn").onclick=()=>{const d=data();if(lastCode==="LT-PREVIEW"){lastCode=code();d.code=lastCode}render(d);window.print()};
+$("#form").onsubmit=async e=>{e.preventDefault();const u=url();if(!u){configure();if(!url())return}lastCode=code();const d=data();render(d);$("#msg").textContent="Enviando a Google Sheets…";try{await fetch(url(),{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)});$("#msg").textContent="✓ Enviado a Google Sheets. N.º "+d.code;$("#msg").className="ok"}catch(err){$("#msg").textContent="⚠ No se pudo enviar. El formulario no guarda datos localmente.";$("#msg").className="err"}};
+updateStatus();render(data());
